@@ -1,7 +1,8 @@
 import torch
 
+
 class ObjectDetector:
-    model =  torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
 
     def getObjectBoxes(self, image):
         # Inference
