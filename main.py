@@ -2,7 +2,6 @@ import cv2
 
 import detection.hand as dh
 import detection.object as do
-import yolo_function as yf
 
 import torch
 
