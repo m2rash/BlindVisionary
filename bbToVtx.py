@@ -8,9 +8,15 @@ def bbToVtx(boundingBox, vertices):
     xCenter = (xMax+xMin)//2
     yCenter = (yMax+yMin)//2
 
+    if width < 8 or height < 8:
+        x,y,z = vertices[xCenter,yCenter]
+        return np.array([x,y,z])
+
     focusWidth = width//8
     focusHeight = height//8  
-       
+     
+
+
     xFocusMin = xCenter - focusWidth
     xFocusMax = xCenter + focusWidth
     yFocusMin = yCenter - focusHeight
@@ -30,7 +36,7 @@ if __name__ == "__main__":
     size = shape[0]*shape[1]
 
     vtcs = np.array([(1,1,1) for i in range(size)],'i,i,i').reshape(shape)
-    bb = [0,0,9,9]
+    bb = [0,0,4,4]
 
 
     print(bbToVtx(bb,vtcs))
