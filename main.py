@@ -13,7 +13,7 @@ def showImages(color_image, depth_image):
     cv2.imshow('Depth', depth_colormap)
     
     
-def getAlignedImages(pipeline, pc) -> tuple[np.ndarray, np.ndarray]:
+def getAlignedImagesAndVtx(pipeline, pc) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     frames = pipeline.wait_for_frames()
         
     # Align the depth frame to color frame
@@ -34,11 +34,9 @@ def getAlignedImages(pipeline, pc) -> tuple[np.ndarray, np.ndarray]:
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
     
-    return color_image, depth_image
+    return color_image, depth_image, vtx
 
 
-def getVtx(img_x, img_y):
-    pass
     
 
 if __name__ == "__main__":
@@ -56,7 +54,7 @@ if __name__ == "__main__":
 
     while True:
         
-        color_image, depth_image = getAlignedImages(pipeline, pc)
+        color_image, depth_image, vtx = getAlignedImagesAndVtx(pipeline, pc)
         
         # TODO call yolo and get midPoint or BB of Hand and item
         
