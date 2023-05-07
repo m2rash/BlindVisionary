@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from bbToVtx import bbToVtx
 import bounding_boxer
+from beep import beeper
 from guidance import draw_divided_circle
 from PIL import Image
 import pyaudio
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     handVtx = (0,0,0)
     objectVtx = (0,0,0)
 
+    meep = beeper()
     
     # cap = cv2.VideoCapture(0)
     while True:
@@ -80,6 +82,7 @@ if __name__ == "__main__":
         #circleImage = draw_divided_circle(42, objectVtx, handVtx, 10, None)
         dist = np.sqrt((objectVtx[0] - handVtx[0]) **2 + (objectVtx[1] - handVtx[1]) **2 + (objectVtx[2] - handVtx[2]) **2)
         print(dist)
+        meep.feedDistAndBeep(dist)
         cv2.namedWindow('Guidance', cv2.WINDOW_AUTOSIZE)
         #cv2.imshow('Guidance', np.asarray(circleImage))
     
