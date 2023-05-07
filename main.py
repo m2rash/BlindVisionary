@@ -86,10 +86,23 @@ if __name__ == "__main__":
         cv2.namedWindow('Guidance', cv2.WINDOW_AUTOSIZE)
         #cv2.imshow('Guidance', np.asarray(circleImage))
     
-        proximityBar = np.zeros((40,200,3), np.uint8)
-        cv2.rectangle(proximityBar,(3,3), (min(197-int(np.floor(dist*100)),197), 37),color=(0,255,0))
+        barHeigt = 120
+        barWidth = 600
+        padding = 5
+            
+        proximityBar = np.zeros((barHeigt,barWidth,3), np.uint8)
+        cv2.rectangle(proximityBar,(0,0), (barWidth,barHeigt),color=(147,255,42))
+
+        # the distance in meters where you want the scale to start at     
+        maxDist = 1.2
+        # the distance the scale will be full
+        minDist = 0.1
+
+        m = (barWidth-2*padding)/(minDist-maxDist)
+        b = padding - m * minDist
+
+        cv2.rectangle(proximityBar,(padding,padding), ((barHeigt-padding),min(max(padding,m*dist+b),barWidth-padding)),csolor=(105,51,210))
         cv2.imshow("Porgress",proximityBar)
-        
         showImages(color_image, depth_image, hand_image, object_image)
 
         if cv2.waitKey(1) == ord('q'):
