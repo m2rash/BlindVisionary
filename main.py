@@ -14,7 +14,7 @@ def showImages(color_image, depth_image, hand_image, object_image):
      # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
     depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
     
-    images = np.hstack((depth_colormap, hand_image, object_image))
+    images = np.hstack((hand_image, object_image))
     cv2.imshow('RealSense', images)
     
     
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     handVtx = (0,0,0)
     objectVtx = (0,0,0)
 
-    meep = beeper()
+    #meep = beeper()
     
     # cap = cv2.VideoCapture(0)
     while True:
@@ -67,27 +67,36 @@ if __name__ == "__main__":
                 
         
         handBBs, hand_image = bounding_boxer.getHandBB(copy.deepcopy(color_image))
-        objectBBs, object_image = bounding_boxer.getMockBB(copy.deepcopy(color_image))
+        objectBBs, object_image = bounding_boxer.getObjectBB(copy.deepcopy(color_image))
         
         #print("Hands: ", handBBs)
         #print("Objects: ", objectBBs)
         
         
         if len(handBBs) > 0: handVtx = bbToVtx(handBBs[0], vtx.reshape((480, 640)))
-        if len(objectBBs) > 0: objectVtx = bbToVtx(objectBBs, vtx.reshape((480, 640)))
+        if len(objectBBs) > 0: objectVtx = bbToVtx(objectBBs[0], vtx.reshape((480, 640)))
         
         # print("Hand: ", handVtx, len(handBBs))
         # print("Object: ", objectVtx, len(objectBBs))
         
-        #circleImage = draw_divided_circle(42, objectVtx, handVtx, 10, None)
+        circleImage = draw_divided_circle(16, objectVtx, handVtx, 10, None)
         dist = np.sqrt((objectVtx[0] - handVtx[0]) **2 + (objectVtx[1] - handVtx[1]) **2 + (objectVtx[2] - handVtx[2]) **2)
-        print(dist)
-        meep.feedDistAndBeep(dist)
+        puffer = []
+        if len(puffer) == 0:
+            puffer = 100* [dist]
+        else:
+            puffer.pop(0)
+            puffer.append(dist)
+        
+        meanDist = np.mean(puffer)
+        
+        #print(dist)
+        #meep.feedDistAndBeep(dist)
         cv2.namedWindow('Guidance', cv2.WINDOW_AUTOSIZE)
-        #cv2.imshow('Guidance', np.asarray(circleImage))
+        cv2.imshow('Guidance', np.asarray(circleImage))
     
         proximityBar = np.zeros((40,200,3), np.uint8)
-        cv2.rectangle(proximityBar,(3,3), (min(197-int(np.floor(dist*100)),197), 37),color=(0,255,0))
+        cv2.rectangle(proximityBar,(3,3), (int(max(197*(1-meanDist/0.55),0)), 37),color=(0,255,0))
         cv2.imshow("Porgress",proximityBar)
         
         showImages(color_image, depth_image, hand_image, object_image)
