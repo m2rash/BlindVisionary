@@ -22,7 +22,7 @@ def bbToVtx(boundingBox, vertices):
     yFocusMin = yCenter - focusHeight
     yFocusMax = yCenter + focusHeight
     
-    sum = np.array([0,0,0])
+    sum = np.array([0,0,0]).astype("float")
     for line in vertices[xFocusMin:xFocusMax,yFocusMin:yFocusMax]:
         for v in line:    
             x,y,z = v

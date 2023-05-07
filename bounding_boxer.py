@@ -37,7 +37,7 @@ def getObjectBB(image):
             cx = int((box["xmin"] + box["xmax"]) / 2)
             cy = int((box["ymin"] + box["ymax"]) / 2)
 
-            results.append([box["xmin"], box["ymin"], box["xmax"], box["ymax"]])
+            results.append([int (box["xmin"]), int (box["ymin"]), int (box["xmax"]), int (box["ymax"])])
             cv2.circle(image, (cx, cy),25, (255, 0, 0), cv2.FILLED)
             
     return results, image

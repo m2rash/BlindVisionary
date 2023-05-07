@@ -1,19 +1,33 @@
+import copy
 import pyrealsense2 as rs
 import numpy as np
 import cv2
+from bbToVtx import bbToVtx
+import bounding_boxer
 
 
-def showImages(color_image, depth_image):
+def showImages(color_image, depth_image, hand_image, object_image):
      # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
     depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
     
-    cv2.namedWindow('Color', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Color', color_image)
-    cv2.namedWindow('Depth', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Depth', depth_colormap)
+    # cv2.namedWindow('Color', cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow('Color', color_image)
+    # cv2.namedWindow('Depth', cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow('Depth', depth_colormap)
+    
+    # cv2.namedWindow('Hand', cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow('Hand', hand_image)
+    # cv2.namedWindow('Object', cv2.WINDOW_AUTOSIZE)
+    # cv2.imshow('Object', object_image)
+    
+    images = np.hstack((depth_colormap, hand_image, object_image))
+    cv2.imshow('RealSense', images)
     
     
 def getAlignedImagesAndVtx(pipeline, pc) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    align_to = rs.stream.color
+    align = rs.align(align_to)
+    
     frames = pipeline.wait_for_frames()
         
     # Align the depth frame to color frame
@@ -49,18 +63,30 @@ if __name__ == "__main__":
     pipeline.start(config)
 
 
-    align_to = rs.stream.color
-    align = rs.align(align_to)
+    
+    # cap = cv2.VideoCapture(0)
 
     while True:
         
         color_image, depth_image, vtx = getAlignedImagesAndVtx(pipeline, pc)
+        # _, color_image = cap.read()
+                
         
-        # TODO call yolo and get midPoint or BB of Hand and item
+        handBBs, hand_image = bounding_boxer.getHandBB(copy.deepcopy(color_image))
+        objectBBs, object_image = bounding_boxer.getObjectBB(copy.deepcopy(color_image))
         
+        print("Hands: ", handBBs)
+        print("Objects: ", objectBBs)
         
+        handVtx = (0,0,0)
+        objectVtx = (0,0,0)
+        if len(handBBs) > 0: handVtx = bbToVtx(handBBs[0], vtx.reshape((480, 640)))
+        if len(objectBBs) > 0: objectVtx = bbToVtx(objectBBs[0], vtx.reshape((480, 640)))
         
-        showImages(color_image, depth_image)
+        print("Hand: ", handVtx)
+        print("Object: ", objectVtx)
+        
+        showImages(color_image, depth_image, hand_image, object_image)
 
         if cv2.waitKey(1) == ord('q'):
             break
