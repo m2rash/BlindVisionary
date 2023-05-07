@@ -7,9 +7,10 @@ def bbToVtx(boundingBox, vertices):
     height = yMax-yMin
     xCenter = (xMax+xMin)//2
     yCenter = (yMax+yMin)//2
+    
 
     if width < 8 or height < 8:
-        x,y,z = vertices[xCenter,yCenter]
+        x,y,z = vertices[yCenter,xCenter]
         return np.array([x,y,z])
 
     focusWidth = width//8
@@ -23,7 +24,7 @@ def bbToVtx(boundingBox, vertices):
     yFocusMax = yCenter + focusHeight
     
     sum = np.array([0,0,0]).astype("float")
-    for line in vertices[xFocusMin:xFocusMax,yFocusMin:yFocusMax]:
+    for line in vertices[yFocusMin:yFocusMax,xFocusMin:xFocusMax]:
         for v in line:    
             x,y,z = v
             sum += np.array([x,y,z])
