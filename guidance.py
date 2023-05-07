@@ -22,7 +22,7 @@ def draw_divided_circle(n, obj_coords, finger_coords, diagonal_len, background):
     dy = obj_coords[1] - finger_coords[1]
     angle = math.atan2(dy, dx)
     angle = np.rad2deg(angle)
-    print(angle)
+    #print(angle)
 
     # calculate the distance between finger and object
     distance = math.sqrt(dx ** 2 + dy ** 2)
